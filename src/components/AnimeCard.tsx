@@ -1,5 +1,5 @@
 import React from "react";
-import { Play, Star, Bookmark, Check, Clock } from "lucide-react";
+import { Play, Bookmark, Check } from "lucide-react";
 import { AnimeItem, BookmarkItem } from "../types";
 
 interface AnimeCardProps {
@@ -43,9 +43,8 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
         {/* Top Badges */}
         <div className="absolute left-2 right-2 top-2 flex items-center justify-between gap-1 text-[10px] font-bold">
           {anime.score ? (
-            <span className="flex items-center gap-0.5 rounded bg-amber-500 px-1.5 py-0.5 text-black font-extrabold shadow">
-              <Star className="h-2.5 w-2.5 fill-black" />
-              {anime.score}
+            <span className="rounded bg-amber-500 px-1.5 py-0.5 text-black font-extrabold shadow">
+              ★ {anime.score}
             </span>
           ) : anime.type ? (
             <span className="rounded bg-black/80 px-1.5 py-0.5 text-neutral-200 border border-neutral-700">
@@ -62,8 +61,7 @@ export const AnimeCard: React.FC<AnimeCardProps> = ({
 
         {/* Release time tag */}
         {anime.releaseTime && (
-          <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-medium text-neutral-300 border border-neutral-800">
-            <Clock className="h-2.5 w-2.5 text-red-500" />
+          <div className="absolute bottom-2 left-2 rounded bg-black/80 px-1.5 py-0.5 text-[10px] font-medium text-neutral-300 border border-neutral-800">
             {anime.releaseTime}
           </div>
         )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, ArrowLeft, Filter, X } from "lucide-react";
+import { Search, ArrowLeft, X } from "lucide-react";
 import { AnimeCard } from "./AnimeCard";
 import { AnimeItem, BookmarkItem } from "../types";
 import { searchAnime } from "../services/api";
@@ -101,7 +101,7 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Header & Search Bar Bar */}
+      {/* Header & Search Bar */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-neutral-800 bg-[#121212] p-5 shadow-lg">
         <div className="flex items-center gap-3">
           <button
@@ -151,9 +151,8 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
       {/* Filter Tabs if multiple results */}
       {!loading && results.length > 1 && (
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <div className="flex items-center gap-1 text-xs font-bold text-neutral-400 mr-2 flex-shrink-0">
-            <Filter className="h-3.5 w-3.5 text-red-500" />
-            <span>Filter:</span>
+          <div className="text-xs font-bold text-neutral-400 mr-2 flex-shrink-0">
+            Filter:
           </div>
 
           <button

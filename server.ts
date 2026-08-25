@@ -68,6 +68,61 @@ const FALLBACK_POPULAR = [
 
 app.use(express.json());
 
+// Robots.txt & Sitemap for SEO (domain: sandanime.my.id)
+app.get("/robots.txt", (req: Request, res: Response) => {
+  res.type("text/plain");
+  res.send(`User-agent: *\nAllow: /\nDisallow: /api/\n\nSitemap: https://sandanime.my.id/sitemap.xml\n`);
+});
+
+app.get("/sitemap.xml", (req: Request, res: Response) => {
+  res.type("application/xml");
+  res.send(`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://sandanime.my.id/</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://sandanime.my.id/#/schedule</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://sandanime.my.id/#/catalog</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sandanime.my.id/#/about</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://sandanime.my.id/#/sitemap</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://sandanime.my.id/#/watchlist</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://sandanime.my.id/#/history</loc>
+    <lastmod>${new Date().toISOString().split("T")[0]}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>`);
+});
+
 // API Routes
 // 1. Home / Spotlight / Latest / Popular
 app.get("/api/anime/home", async (req: Request, res: Response) => {

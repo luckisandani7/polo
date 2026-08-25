@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import {
-  Bookmark,
-  History,
   Trash2,
   Play,
-  Star,
-  Sparkles,
 } from "lucide-react";
 import { BookmarkItem, WatchHistoryItem } from "../types";
 
@@ -43,8 +39,7 @@ export const WatchHistoryView: React.FC<WatchHistoryViewProps> = ({
       {/* Top Header & Tab switcher */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
         <div>
-          <div className="flex items-center gap-2 text-red-500 text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="h-4 w-4" />
+          <div className="text-red-500 text-xs font-bold uppercase tracking-wider">
             Koleksi Pribadi
           </div>
           <h2 className="mt-1 text-2xl font-extrabold text-white">
@@ -58,25 +53,23 @@ export const WatchHistoryView: React.FC<WatchHistoryViewProps> = ({
         <div className="flex items-center gap-2 rounded-xl border border-neutral-800 bg-[#121212] p-1">
           <button
             onClick={() => setActiveTab("watchlist")}
-            className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
+            className={`rounded-lg px-4 py-2 text-xs font-bold transition-all ${
               activeTab === "watchlist"
                 ? "bg-red-600 text-white shadow-md shadow-red-600/30"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
-            <Bookmark className="h-3.5 w-3.5" />
-            <span>Watchlist ({bookmarks.length})</span>
+            Watchlist ({bookmarks.length})
           </button>
           <button
             onClick={() => setActiveTab("history")}
-            className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
+            className={`rounded-lg px-4 py-2 text-xs font-bold transition-all ${
               activeTab === "history"
                 ? "bg-red-600 text-white shadow-md shadow-red-600/30"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
-            <History className="h-3.5 w-3.5" />
-            <span>Riwayat ({history.length})</span>
+            Riwayat ({history.length})
           </button>
         </div>
       </div>
@@ -108,10 +101,9 @@ export const WatchHistoryView: React.FC<WatchHistoryViewProps> = ({
 
           {filteredBookmarks.length === 0 ? (
             <div className="rounded-xl border border-neutral-800 bg-[#121212] p-12 text-center text-neutral-400">
-              <Bookmark className="mx-auto h-10 w-10 text-neutral-600 mb-3" />
               <h3 className="text-base font-bold text-white">Watchlist Kosong</h3>
               <p className="mt-1 text-xs max-w-sm mx-auto">
-                Anda belum menandai anime apapun. Klik ikon bookmark pada anime untuk menyimpannya ke daftar tontonan.
+                Anda belum menandai anime apapun. Klik tombol bookmark pada anime untuk menyimpannya ke daftar tontonan.
               </p>
             </div>
           ) : (
@@ -137,9 +129,8 @@ export const WatchHistoryView: React.FC<WatchHistoryViewProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-[#121212] via-transparent to-black/30" />
 
                     {item.score && (
-                      <span className="absolute top-2 left-2 flex items-center gap-0.5 rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-black">
-                        <Star className="h-2.5 w-2.5 fill-black" />
-                        {item.score}
+                      <span className="absolute top-2 left-2 rounded bg-amber-500 px-1.5 py-0.5 text-[10px] font-extrabold text-black">
+                        ★ {item.score}
                       </span>
                     )}
 
@@ -201,7 +192,6 @@ export const WatchHistoryView: React.FC<WatchHistoryViewProps> = ({
 
           {history.length === 0 ? (
             <div className="rounded-xl border border-neutral-800 bg-[#121212] p-12 text-center text-neutral-400">
-              <History className="mx-auto h-10 w-10 text-neutral-600 mb-3" />
               <h3 className="text-base font-bold text-white">Belum Ada Riwayat</h3>
               <p className="mt-1 text-xs max-w-sm mx-auto">
                 Riwayat pemutaran episode anime yang Anda tonton akan otomatis muncul di sini.

@@ -6,12 +6,7 @@ import {
   Sun,
   ChevronLeft,
   ChevronRight,
-  Download,
-  Server,
   Share2,
-  CheckCircle2,
-  ListVideo,
-  Info,
   Loader2,
   AlertTriangle,
   X,
@@ -238,7 +233,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                   />
                 ) : (
                   <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center text-neutral-400">
-                    <Info className="mb-2 h-10 w-10 text-red-500" />
                     <p className="font-bold text-white">Stream tidak tersedia</p>
                     <p className="mt-1 text-xs">Silakan pilih server lain di bawah ini.</p>
                   </div>
@@ -259,12 +253,9 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             {/* Server Selector Bar (Otakudesu Servers / Qualities) */}
             <div className="rounded-xl border border-neutral-800 bg-[#121212] p-3.5 space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-800 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <Server className="h-4 w-4 text-red-500" />
-                  <span className="text-xs font-bold uppercase tracking-wider text-white">
-                    Pilihan Server & Kualitas
-                  </span>
-                </div>
+                <span className="text-xs font-bold uppercase tracking-wider text-white">
+                  Pilihan Server & Kualitas
+                </span>
 
                 {/* Default Server quick switch */}
                 <button
@@ -379,10 +370,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             {episode.download && episode.download.length > 0 && (
               <div className="rounded-xl border border-neutral-800 bg-[#121212] p-4">
                 <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
-                  <div className="flex items-center gap-2">
-                    <Download className="h-4 w-4 text-red-500" />
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-white">Unduh Episode</h3>
-                  </div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">Unduh Episode</h3>
 
                   {/* Format Tabs */}
                   <div className="flex flex-wrap items-center gap-1 rounded bg-neutral-900 p-0.5 border border-neutral-800">
@@ -448,10 +436,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           <div className={`${theaterMode ? "hidden" : "block lg:col-span-4 xl:col-span-3"}`}>
             <div className="sticky top-20 rounded-xl border border-neutral-800 bg-[#121212] p-3.5 shadow-xl space-y-3">
               <div className="flex items-center justify-between border-b border-neutral-800 pb-2">
-                <div className="flex items-center gap-2">
-                  <ListVideo className="h-4 w-4 text-red-500" />
-                  <h3 className="font-bold text-xs uppercase tracking-wider text-white">Daftar Episode</h3>
-                </div>
+                <h3 className="font-bold text-xs uppercase tracking-wider text-white">Daftar Episode</h3>
                 <span className="text-[10px] font-bold text-neutral-400 bg-neutral-900 px-2 py-0.5 rounded border border-neutral-800">
                   {allEpisodes.length || 1} Ep
                 </span>
@@ -482,7 +467,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                           </span>
                           <span className="truncate">{ep.title || `Episode ${ep.episode}`}</span>
                         </div>
-                        {isCurrent && <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0 text-white" />}
                       </button>
                     );
                   })

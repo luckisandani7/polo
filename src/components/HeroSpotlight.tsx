@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Play, Plus, Check, Star, ChevronLeft, ChevronRight, Flame } from "lucide-react";
+import { Play, ChevronLeft, ChevronRight } from "lucide-react";
 import { AnimeItem, BookmarkItem } from "../types";
 
 interface HeroSpotlightProps {
@@ -45,7 +45,7 @@ export const HeroSpotlight: React.FC<HeroSpotlightProps> = ({
 
   return (
     <div className="space-y-4">
-      {/* 1. Main Custom Brand Banner (As requested by User) */}
+      {/* 1. Main Custom Brand Banner */}
       <div className="relative w-full overflow-hidden rounded-2xl border border-neutral-800 bg-[#0d0d0d] shadow-2xl">
         <div className="relative w-full h-[180px] sm:h-[240px] md:h-[300px] lg:h-[340px] overflow-hidden flex items-center justify-center bg-black">
           <img
@@ -65,8 +65,7 @@ export const HeroSpotlight: React.FC<HeroSpotlightProps> = ({
 
           {/* Quick interactive banner badge overlay */}
           <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 flex flex-wrap items-center gap-2">
-            <span className="flex items-center gap-1.5 rounded-md bg-red-600 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-red-600/40">
-              <Flame className="h-3.5 w-3.5 fill-white" />
+            <span className="rounded-md bg-red-600 px-2.5 py-1 text-xs font-black uppercase tracking-wider text-white shadow-md shadow-red-600/40">
               Nonton Anime Sub Indo
             </span>
             <span className="hidden sm:inline-block rounded-md bg-black/80 px-2.5 py-1 text-xs font-bold text-neutral-300 backdrop-blur-md border border-neutral-700">
@@ -76,7 +75,7 @@ export const HeroSpotlight: React.FC<HeroSpotlightProps> = ({
         </div>
       </div>
 
-      {/* 2. Featured Anime Spotlight Carousel (Simple, Clean Red & Black) */}
+      {/* 2. Featured Anime Spotlight Carousel */}
       {current && (
         <div className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-[#121212] p-5 sm:p-7 shadow-xl">
           {/* Background Blurred Glow */}
@@ -123,9 +122,8 @@ export const HeroSpotlight: React.FC<HeroSpotlightProps> = ({
                   </span>
                 )}
                 {current.score && (
-                  <span className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-400 border border-amber-500/30">
-                    <Star className="h-3 w-3 fill-amber-400" />
-                    {current.score}
+                  <span className="rounded bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-400 border border-amber-500/30">
+                    ★ {current.score}
                   </span>
                 )}
                 {current.episode && (
@@ -170,22 +168,16 @@ export const HeroSpotlight: React.FC<HeroSpotlightProps> = ({
                       score: current.score,
                     })
                   }
-                  className={`flex items-center gap-1.5 rounded-lg border px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+                  className={`flex items-center rounded-lg border px-4 py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                     bookmarked
                       ? "border-emerald-600/50 bg-emerald-600/20 text-emerald-300"
                       : "border-neutral-700 bg-neutral-850 text-neutral-200 hover:bg-neutral-800 hover:border-red-600/50"
                   }`}
                 >
                   {bookmarked ? (
-                    <>
-                      <Check className="h-3.5 w-3.5" />
-                      <span>Di Watchlist</span>
-                    </>
+                    <span>Di Watchlist</span>
                   ) : (
-                    <>
-                      <Plus className="h-3.5 w-3.5" />
-                      <span>+ Watchlist</span>
-                    </>
+                    <span>+ Watchlist</span>
                   )}
                 </button>
 

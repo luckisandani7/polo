@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Calendar, Clock, Play } from "lucide-react";
+import { Play } from "lucide-react";
 import { ScheduleDay } from "../types";
 
 interface ScheduleViewProps {
@@ -52,8 +52,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ schedule, onSelectAn
       {/* Title Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-800 pb-4">
         <div>
-          <div className="flex items-center gap-2 text-red-500 text-xs font-bold uppercase tracking-wider">
-            <Calendar className="h-4 w-4" />
+          <div className="text-red-500 text-xs font-bold uppercase tracking-wider">
             Jadwal Rilis Anime
           </div>
           <h2 className="mt-1 text-2xl font-extrabold text-white">
@@ -65,7 +64,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ schedule, onSelectAn
         </div>
 
         <div className="flex items-center gap-1.5 rounded-lg bg-neutral-900 px-3 py-2 text-xs border border-neutral-800">
-          <Clock className="h-4 w-4 text-red-500" />
           <span className="text-neutral-400">Hari ini:</span>
           <span className="font-bold text-red-500">{dayNamesIndo[currentDayName] || currentDayName}</span>
         </div>
@@ -154,7 +152,6 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ schedule, onSelectAn
         </div>
       ) : (
         <div className="rounded-xl border border-neutral-800 bg-[#121212] p-12 text-center text-neutral-400">
-          <Calendar className="mx-auto h-10 w-10 text-neutral-600 mb-2" />
           <p className="font-bold text-white text-sm">Tidak ada anime yang dijadwalkan pada hari ini</p>
           <p className="text-xs text-neutral-500 mt-1">Pilih hari lain untuk melihat jadwal tayang mingguan.</p>
         </div>

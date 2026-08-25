@@ -1,12 +1,8 @@
 import React, { useState } from "react";
 import {
-  Star,
   Play,
-  Bookmark,
-  Check,
   Share2,
   ChevronLeft,
-  Info,
 } from "lucide-react";
 import { AnimeDetail, BookmarkItem } from "../types";
 import { EpisodeSelector } from "./EpisodeSelector";
@@ -87,28 +83,22 @@ export const AnimeDetailView: React.FC<AnimeDetailViewProps> = ({
             <div className="mt-3 flex flex-col gap-2">
               <button
                 onClick={() => onToggleBookmark("watching")}
-                className={`flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+                className={`flex w-full items-center justify-center rounded-lg py-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                   isBookmarked
                     ? "border border-emerald-600/50 bg-emerald-600/20 text-emerald-400"
                     : "border border-neutral-700 bg-neutral-800 text-neutral-200 hover:bg-neutral-700 hover:border-red-600/50"
                 }`}
               >
                 {isBookmarked ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    <span>Di Watchlist</span>
-                  </>
+                  <span>Di Watchlist</span>
                 ) : (
-                  <>
-                    <Bookmark className="h-4 w-4" />
-                    <span>+ Watchlist</span>
-                  </>
+                  <span>+ Watchlist</span>
                 )}
               </button>
 
               <button
                 onClick={handleShare}
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-neutral-800 bg-neutral-900 py-2 text-xs font-semibold text-neutral-400 hover:text-white transition-colors"
+                className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900 py-2 text-xs font-semibold text-neutral-400 hover:text-white transition-colors"
               >
                 <Share2 className="h-3.5 w-3.5" />
                 <span>{copied ? "Link Disalin!" : "Bagikan"}</span>
@@ -138,9 +128,8 @@ export const AnimeDetailView: React.FC<AnimeDetailViewProps> = ({
                   </span>
                 )}
                 {anime.rating && (
-                  <span className="flex items-center gap-1 rounded bg-amber-500/20 px-2 py-0.5 font-bold text-amber-400 border border-amber-500/30">
-                    <Star className="h-3.5 w-3.5 fill-amber-400" />
-                    {anime.rating}
+                  <span className="rounded bg-amber-500/20 px-2 py-0.5 font-bold text-amber-400 border border-amber-500/30">
+                    ★ {anime.rating}
                   </span>
                 )}
               </div>
@@ -212,8 +201,7 @@ export const AnimeDetailView: React.FC<AnimeDetailViewProps> = ({
             {/* Synopsis */}
             {anime.synopsis?.paragraphList && anime.synopsis.paragraphList.length > 0 && (
               <div className="space-y-1 text-xs sm:text-sm text-neutral-300 leading-relaxed bg-neutral-900/50 p-4 rounded-xl border border-neutral-800">
-                <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-red-500 mb-1">
-                  <Info className="h-3.5 w-3.5" />
+                <div className="text-xs font-bold uppercase tracking-wider text-red-500 mb-1">
                   Sinopsis Cerita
                 </div>
                 {anime.synopsis.paragraphList.map((p, idx) => (

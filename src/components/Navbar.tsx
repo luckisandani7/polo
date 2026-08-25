@@ -1,17 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
-  Bookmark,
-  History,
-  Calendar,
-  Layers,
   Menu,
   X,
-  Flame,
-  Star,
-  Shuffle,
   ChevronRight,
-  Tv,
 } from "lucide-react";
 import { searchAnime } from "../services/api";
 import { AnimeItem } from "../types";
@@ -99,11 +91,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const navLinks = [
-    { id: "home", label: "Beranda", icon: Flame },
-    { id: "schedule", label: "Jadwal", icon: Calendar },
-    { id: "catalog", label: "Katalog", icon: Layers },
-    { id: "watchlist", label: "Watchlist", icon: Bookmark, badge: bookmarkCount },
-    { id: "history", label: "Riwayat", icon: History, badge: historyCount },
+    { id: "home", label: "Beranda" },
+    { id: "schedule", label: "Jadwal" },
+    { id: "catalog", label: "Katalog" },
+    { id: "watchlist", label: "Watchlist", badge: bookmarkCount },
+    { id: "history", label: "Riwayat", badge: historyCount },
   ];
 
   return (
@@ -114,17 +106,17 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             id="nav-brand-logo"
             onClick={() => setActiveTab("home")}
-            className="group flex items-center gap-2.5 text-left transition-opacity hover:opacity-90 active:scale-95"
+            className="group flex items-center gap-2 text-left transition-opacity hover:opacity-90 active:scale-95"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-600 text-white shadow-md shadow-red-600/30">
-              <Tv className="h-5 w-5" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-sm">
+              S
             </div>
             <div>
-              <div className="flex items-center gap-1 font-black tracking-tight text-lg sm:text-xl">
+              <div className="flex items-center gap-0.5 font-black tracking-tight text-lg sm:text-xl leading-none">
                 <span className="text-white">SAND</span>
                 <span className="text-red-600 font-extrabold">ANIME</span>
               </div>
-              <p className="text-[10px] font-medium tracking-wide text-neutral-400 uppercase">
+              <p className="text-[10px] font-medium tracking-wider text-neutral-400 uppercase mt-0.5">
                 Anime Sub Indo
               </p>
             </div>
@@ -133,20 +125,18 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Desktop Nav Links */}
           <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => {
-              const Icon = link.icon;
               const isActive = activeTab === link.id;
               return (
                 <button
                   key={link.id}
                   id={`nav-link-${link.id}`}
                   onClick={() => setActiveTab(link.id)}
-                  className={`relative flex items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-bold uppercase tracking-wider transition-all ${
+                  className={`relative flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all ${
                     isActive
                       ? "bg-red-600 text-white shadow-sm shadow-red-600/30"
                       : "text-neutral-300 hover:bg-neutral-900 hover:text-white"
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
                   <span>{link.label}</span>
                   {link.badge !== undefined && link.badge > 0 && (
                     <span
@@ -213,14 +203,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <div className="space-y-1">
                     <div className="flex items-center justify-between px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
                       <span>Hasil Langsung ({searchResults.length})</span>
-                      <span className="text-[9px] text-neutral-500 lowercase">tekan enter untuk halaman hasil</span>
+                      <span className="text-[9px] text-neutral-500 lowercase">tekan enter untuk melihat semua</span>
                     </div>
                     {searchResults.map((item, idx) => (
                       <button
                         key={`${item.slug}-${idx}`}
                         id={`search-item-${idx}`}
                         onClick={() => handleSearchResultClick(item.slug)}
-                        className="flex w-full items-center gap-2.5 rounded-lg p-2 text-left transition-colors hover:bg-neutral-850 hover:border-neutral-700"
+                        className="flex w-full items-center gap-2.5 rounded-lg p-2 text-left transition-colors hover:bg-neutral-800"
                       >
                         <img
                           src={
@@ -241,9 +231,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                             )}
                             {item.status && <span>• {item.status}</span>}
                             {item.score && (
-                              <span className="flex items-center gap-0.5 text-amber-400">
-                                <Star className="h-2.5 w-2.5 fill-amber-400" />
-                                {item.score}
+                              <span className="text-amber-400 font-bold">
+                                Skor {item.score}
                               </span>
                             )}
                           </div>
@@ -256,7 +245,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                       onClick={() => handleSearchFormSubmit()}
                       className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-red-600/20 border border-red-600/40 p-2 text-center text-xs font-bold text-red-400 hover:bg-red-600 hover:text-white transition-colors"
                     >
-                      <Search className="h-3.5 w-3.5" />
                       <span>Lihat semua hasil untuk "{query}"</span>
                     </button>
                   </div>
@@ -286,9 +274,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             id="nav-random-btn"
             onClick={onRandomAnime}
             title="Pilih Anime Acak"
-            className="hidden sm:flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-neutral-300 transition-colors hover:border-red-600 hover:text-red-500"
+            className="hidden sm:flex items-center rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-neutral-300 transition-colors hover:border-red-600 hover:text-red-500"
           >
-            <Shuffle className="h-3.5 w-3.5 text-red-500" />
             <span>Acak</span>
           </button>
 
@@ -308,7 +295,6 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="border-t border-neutral-800 bg-[#0a0a0a] px-4 py-3 lg:hidden">
           <div className="grid grid-cols-2 gap-2">
             {navLinks.map((link) => {
-              const Icon = link.icon;
               const isActive = activeTab === link.id;
               return (
                 <button
@@ -318,16 +304,15 @@ export const Navbar: React.FC<NavbarProps> = ({
                     setActiveTab(link.id);
                     setMobileMenuOpen(false);
                   }}
-                  className={`flex items-center gap-2 rounded-lg p-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
+                  className={`flex items-center justify-between rounded-lg p-2.5 text-xs font-bold uppercase tracking-wider transition-colors ${
                     isActive
                       ? "bg-red-600 text-white"
                       : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
                   }`}
                 >
-                  <Icon className="h-3.5 w-3.5" />
                   <span>{link.label}</span>
                   {link.badge !== undefined && link.badge > 0 && (
-                    <span className="ml-auto rounded-full bg-red-600 px-1.5 py-0.2 text-[9px] font-black text-white">
+                    <span className="rounded-full bg-red-600 px-1.5 py-0.2 text-[9px] font-black text-white">
                       {link.badge}
                     </span>
                   )}
@@ -340,11 +325,31 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onRandomAnime();
                 setMobileMenuOpen(false);
               }}
-              className="col-span-2 flex items-center justify-center gap-2 rounded-lg bg-red-600 p-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-red-600/30"
+              className="col-span-2 flex items-center justify-center rounded-lg bg-red-600 p-2.5 text-xs font-bold uppercase tracking-wider text-white shadow-md shadow-red-600/30"
             >
-              <Shuffle className="h-3.5 w-3.5" />
               <span>Tonton Anime Acak</span>
             </button>
+            <div className="col-span-2 flex items-center justify-center gap-4 pt-2 border-t border-neutral-800/80 text-[11px] text-neutral-400">
+              <button
+                onClick={() => {
+                  setActiveTab("about");
+                  setMobileMenuOpen(false);
+                }}
+                className="hover:text-red-400 transition-colors"
+              >
+                Tentang Kami
+              </button>
+              <span>•</span>
+              <button
+                onClick={() => {
+                  setActiveTab("sitemap");
+                  setMobileMenuOpen(false);
+                }}
+                className="hover:text-red-400 transition-colors"
+              >
+                Peta Situs
+              </button>
+            </div>
           </div>
         </div>
       )}

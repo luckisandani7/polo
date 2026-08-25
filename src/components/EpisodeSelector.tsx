@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Search, Grid, List, Play, Check } from "lucide-react";
+import { Search, Play } from "lucide-react";
 import { EpisodeItem } from "../types";
 
 interface EpisodeSelectorProps {
@@ -66,28 +66,26 @@ export const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
           </div>
 
           {/* Grid / List View Toggle */}
-          <div className="flex items-center rounded-lg border border-neutral-800 bg-neutral-900 p-0.5">
+          <div className="flex items-center rounded-lg border border-neutral-800 bg-neutral-900 p-0.5 text-xs font-semibold">
             <button
               onClick={() => setViewMode("grid")}
-              className={`rounded p-1.5 text-xs transition-colors ${
+              className={`rounded px-2.5 py-1 transition-colors ${
                 viewMode === "grid"
                   ? "bg-red-600 text-white"
                   : "text-neutral-400 hover:text-white"
               }`}
-              title="Tampilan Grid"
             >
-              <Grid className="h-3.5 w-3.5" />
+              Grid
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`rounded p-1.5 text-xs transition-colors ${
+              className={`rounded px-2.5 py-1 transition-colors ${
                 viewMode === "list"
                   ? "bg-red-600 text-white"
                   : "text-neutral-400 hover:text-white"
               }`}
-              title="Tampilan Daftar"
             >
-              <List className="h-3.5 w-3.5" />
+              List
             </button>
           </div>
         </div>
@@ -142,9 +140,7 @@ export const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
                   </span>
                 )}
                 {isWatched && (
-                  <span className="absolute right-1.5 top-1.5 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-400">
-                    <Check className="h-2.5 w-2.5" />
-                  </span>
+                  <span className="absolute right-1.5 top-1.5 flex h-2 w-2 rounded-full bg-emerald-500" title="Sudah ditonton" />
                 )}
               </button>
             );
@@ -172,8 +168,7 @@ export const EpisodeSelector: React.FC<EpisodeSelectorProps> = ({
 
                 <div className="flex items-center gap-2">
                   {isWatched && (
-                    <span className="flex items-center gap-1 rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
-                      <Check className="h-3 w-3" />
+                    <span className="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">
                       Ditonton
                     </span>
                   )}

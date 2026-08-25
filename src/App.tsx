@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
-  Flame,
-  Clock,
-  Star,
   ChevronRight,
   Play,
   AlertCircle,
-  Tag,
 } from "lucide-react";
 import { Navbar } from "./components/Navbar";
 import { HeroSpotlight } from "./components/HeroSpotlight";
@@ -17,6 +13,8 @@ import { ScheduleView } from "./components/ScheduleView";
 import { CatalogView } from "./components/CatalogView";
 import { WatchHistoryView } from "./components/WatchHistoryView";
 import { SearchResultsView } from "./components/SearchResultsView";
+import { AboutUsView } from "./components/AboutUsView";
+import { SitemapView } from "./components/SitemapView";
 import { Footer } from "./components/Footer";
 
 import {
@@ -52,7 +50,14 @@ function parseRouteFromHash(hash: string): {
     const animeSlug = decodeURIComponent(clean.replace("anime/", ""));
     return { tab: "home", animeSlug, episodeSlug: null, searchQuery: null };
   }
-  if (clean === "schedule" || clean === "catalog" || clean === "watchlist" || clean === "history") {
+  if (
+    clean === "schedule" ||
+    clean === "catalog" ||
+    clean === "watchlist" ||
+    clean === "history" ||
+    clean === "about" ||
+    clean === "sitemap"
+  ) {
     return { tab: clean, animeSlug: null, episodeSlug: null, searchQuery: null };
   }
   return { tab: "home", animeSlug: null, episodeSlug: null, searchQuery: null };
@@ -403,8 +408,25 @@ export default function App() {
             onClearHistory={clearHistory}
             onRemoveBookmark={removeBookmark}
           />
+        ) : /* 7. ABOUT US TAB VIEW */
+        activeTab === "about" ? (
+          <AboutUsView
+            onBack={handleGoBack}
+            onExploreCatalog={() => handleSelectTab("catalog")}
+            onViewSchedule={() => handleSelectTab("schedule")}
+          />
+        ) : /* 8. SITEMAP TAB VIEW */
+        activeTab === "sitemap" ? (
+          <SitemapView
+            onNavigateTab={handleSelectTab}
+            onSelectGenre={(genre) => {
+              setSelectedGenre(genre);
+              handleSelectTab("home");
+            }}
+            onBack={handleGoBack}
+          />
         ) : (
-          /* 6. HOME PAGE VIEW (DEFAULT) */
+          /* 9. HOME PAGE VIEW (DEFAULT) */
           <div className="space-y-10">
             {/* Spotlight Hero Carousel */}
             {loadingHome ? (
@@ -431,8 +453,7 @@ export default function App() {
             {history.length > 0 && (
               <div className="rounded-xl border border-neutral-800 bg-[#121212] p-5 space-y-3 shadow-lg">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-red-500" />
+                  <div>
                     <h3 className="font-bold text-sm text-white">Lanjutkan Menonton</h3>
                   </div>
                   <button
@@ -480,10 +501,7 @@ export default function App() {
             {genresList.length > 0 && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Tag className="h-4 w-4 text-red-500" />
-                    <h3 className="font-bold text-sm text-white">Jelajahi Berdasarkan Genre</h3>
-                  </div>
+                  <h3 className="font-bold text-sm text-white">Jelajahi Berdasarkan Genre</h3>
                 </div>
 
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
@@ -521,7 +539,6 @@ export default function App() {
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
                 <div className="flex items-center gap-2">
-                  <Flame className="h-5 w-5 text-red-500" />
                   <h2 className="text-xl font-bold text-white">
                     Episode Terbaru (Latest Release)
                   </h2>
@@ -583,7 +600,6 @@ export default function App() {
               <div className="space-y-4 pt-4">
                 <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
                   <div className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
                     <h2 className="text-xl font-bold text-white">
                       Anime Populer Hari Ini
                     </h2>
