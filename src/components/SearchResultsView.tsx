@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, ArrowLeft, Sparkles, Filter, X } from "lucide-react";
+import { Search, ArrowLeft, Filter, X } from "lucide-react";
 import { AnimeCard } from "./AnimeCard";
 import { AnimeItem, BookmarkItem } from "../types";
 import { searchAnime } from "../services/api";
@@ -11,7 +11,7 @@ interface SearchResultsViewProps {
   onSearchNew: (newQuery: string) => void;
   isBookmarked: (slug: string) => BookmarkItem | undefined;
   onToggleBookmark: (anime: AnimeItem) => void;
-  onExploreCatalog: () => void;
+  onExploreCatalog?: () => void;
 }
 
 export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
@@ -21,7 +21,6 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
   onSearchNew,
   isBookmarked,
   onToggleBookmark,
-  onExploreCatalog,
 }) => {
   const [searchInput, setSearchInput] = useState(query);
   const [results, setResults] = useState<AnimeItem[]>([]);
@@ -231,33 +230,27 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
       ) : (
         /* Empty State */
         <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-800 bg-[#121212] p-12 text-center shadow-lg">
-          <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-neutral-900/80 p-2 border border-neutral-800 shadow-inner">
+          <div className="mb-4 flex h-28 w-28 items-center justify-center p-1">
             <img
-              src="https://www.pasteboard.co/yu1eLs804tjM.png"
+              src="https://i.ibb.co.com/4Rz71j9y/1000440130-removebg-preview.png"
               alt="Tidak Ditemukan"
-              className="h-full w-full object-contain"
+              className="h-full w-full object-contain drop-shadow-md"
               referrerPolicy="no-referrer"
             />
           </div>
           <h3 className="text-lg font-bold text-white">Tidak Ada Hasil Ditemukan</h3>
           <p className="mt-1 max-w-md text-xs text-neutral-400 leading-relaxed">
             Tidak ditemukan anime dengan kata kunci <span className="text-red-400 font-bold">"{query}"</span>.
-            Cobalah menggunakan kata kunci yang lebih umum, periksa ejaan judul, atau cari melalui direktori A-Z.
+            Cobalah menggunakan kata kunci yang lebih umum atau periksa ejaan judul anime.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <button
-              onClick={onExploreCatalog}
-              className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-xs font-bold text-white shadow-md shadow-red-600/30 transition-transform active:scale-95 hover:bg-red-700"
-            >
-              <Sparkles className="h-4 w-4" />
-              <span>Buka Katalog A-Z</span>
-            </button>
-            <button
               onClick={onBack}
-              className="rounded-xl border border-neutral-700 bg-neutral-800 px-4 py-2.5 text-xs font-bold text-neutral-200 transition-colors hover:bg-neutral-700"
+              className="flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-xs font-bold text-white shadow-md shadow-red-600/30 transition-transform active:scale-95 hover:bg-red-700"
             >
-              Kembali ke Halaman Sebelumnya
+              <ArrowLeft className="h-4 w-4" />
+              <span>Kembali ke Halaman Sebelumnya</span>
             </button>
           </div>
         </div>

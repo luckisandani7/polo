@@ -263,9 +263,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                 ) : (
                   <div className="py-4 text-center text-xs text-neutral-400 flex flex-col items-center">
                     <img
-                      src="https://www.pasteboard.co/yu1eLs804tjM.png"
+                      src="https://i.ibb.co.com/4Rz71j9y/1000440130-removebg-preview.png"
                       alt="Tidak ditemukan"
-                      className="h-10 w-10 object-contain mb-2 opacity-80"
+                      className="h-12 w-12 object-contain mb-2 opacity-90 drop-shadow-sm"
                       referrerPolicy="no-referrer"
                     />
                     <p>Tidak ada preview instan untuk "{query}"</p>
