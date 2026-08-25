@@ -261,11 +261,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </button>
                   </div>
                 ) : (
-                  <div className="py-4 text-center text-xs text-neutral-400">
+                  <div className="py-4 text-center text-xs text-neutral-400 flex flex-col items-center">
+                    <img
+                      src="https://www.pasteboard.co/yu1eLs804tjM.png"
+                      alt="Tidak ditemukan"
+                      className="h-10 w-10 object-contain mb-2 opacity-80"
+                      referrerPolicy="no-referrer"
+                    />
                     <p>Tidak ada preview instan untuk "{query}"</p>
                     <button
                       onClick={() => handleSearchFormSubmit()}
-                      className="mt-2 inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1 text-xs font-bold text-white shadow-sm"
+                      className="mt-2 inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1 text-xs font-bold text-white shadow-sm hover:bg-red-700"
                     >
                       Cari Di Semua Database
                     </button>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Search, ArrowLeft, Frown, Sparkles, Filter, X } from "lucide-react";
+import { Search, ArrowLeft, Sparkles, Filter, X } from "lucide-react";
 import { AnimeCard } from "./AnimeCard";
 import { AnimeItem, BookmarkItem } from "../types";
 import { searchAnime } from "../services/api";
@@ -231,8 +231,13 @@ export const SearchResultsView: React.FC<SearchResultsViewProps> = ({
       ) : (
         /* Empty State */
         <div className="flex flex-col items-center justify-center rounded-2xl border border-neutral-800 bg-[#121212] p-12 text-center shadow-lg">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-600/10 text-red-500 mb-4 border border-red-600/20">
-            <Frown className="h-8 w-8" />
+          <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-2xl bg-neutral-900/80 p-2 border border-neutral-800 shadow-inner">
+            <img
+              src="https://www.pasteboard.co/yu1eLs804tjM.png"
+              alt="Tidak Ditemukan"
+              className="h-full w-full object-contain"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <h3 className="text-lg font-bold text-white">Tidak Ada Hasil Ditemukan</h3>
           <p className="mt-1 max-w-md text-xs text-neutral-400 leading-relaxed">
