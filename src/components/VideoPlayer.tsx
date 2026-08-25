@@ -9,10 +9,6 @@ import {
   Download,
   Server,
   Share2,
-  Heart,
-  Flame,
-  Laugh,
-  Sparkles,
   ExternalLink,
   MessageSquare,
   Send,
@@ -89,13 +85,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   });
   const [newComment, setNewComment] = useState("");
   const [userName, setUserName] = useState("WibuKeren");
-  const [reactions, setReactions] = useState<{ [key: string]: number }>({
-    fire: 28,
-    love: 19,
-    mindblown: 12,
-    sad: 4,
-  });
-  const [userReacted, setUserReacted] = useState<string | null>(null);
 
   // Reset stream when episode changes
   useEffect(() => {
@@ -158,20 +147,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       localStorage.setItem(`comments_${episode.seriesSlug}`, JSON.stringify(updated));
     } catch (e) {
       console.error(e);
-    }
-  };
-
-  const handleReaction = (type: string) => {
-    if (userReacted === type) {
-      setReactions((prev) => ({ ...prev, [type]: prev[type] - 1 }));
-      setUserReacted(null);
-    } else {
-      setReactions((prev) => ({
-        ...prev,
-        [type]: prev[type] + 1,
-        ...(userReacted ? { [userReacted]: prev[userReacted] - 1 } : {}),
-      }));
-      setUserReacted(type);
     }
   };
 
@@ -422,55 +397,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     <span>{copiedLink ? "Disalin!" : "Bagikan"}</span>
                   </button>
                 </div>
-              </div>
-
-              {/* Reaction Badges */}
-              <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-neutral-800/80">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400 mr-1">Reaksi:</span>
-                <button
-                  onClick={() => handleReaction("fire")}
-                  className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold transition-transform active:scale-95 ${
-                    userReacted === "fire"
-                      ? "bg-red-600 text-white"
-                      : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
-                  }`}
-                >
-                  <Flame className="h-3.5 w-3.5 text-red-400" />
-                  <span>Keren ({reactions.fire})</span>
-                </button>
-                <button
-                  onClick={() => handleReaction("love")}
-                  className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold transition-transform active:scale-95 ${
-                    userReacted === "love"
-                      ? "bg-red-600 text-white"
-                      : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
-                  }`}
-                >
-                  <Heart className="h-3.5 w-3.5 text-rose-400" />
-                  <span>Suka ({reactions.love})</span>
-                </button>
-                <button
-                  onClick={() => handleReaction("mindblown")}
-                  className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold transition-transform active:scale-95 ${
-                    userReacted === "mindblown"
-                      ? "bg-red-600 text-white"
-                      : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
-                  }`}
-                >
-                  <Sparkles className="h-3.5 w-3.5 text-amber-400" />
-                  <span>Plot Twist ({reactions.mindblown})</span>
-                </button>
-                <button
-                  onClick={() => handleReaction("sad")}
-                  className={`flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold transition-transform active:scale-95 ${
-                    userReacted === "sad"
-                      ? "bg-red-600 text-white"
-                      : "bg-neutral-900 text-neutral-300 hover:bg-neutral-800"
-                  }`}
-                >
-                  <Laugh className="h-3.5 w-3.5 text-blue-400" />
-                  <span>Sedih ({reactions.sad})</span>
-                </button>
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import {
   Flame,
   Clock,
@@ -28,6 +28,29 @@ import {
 } from "./services/api";
 import { useWatchHistory } from "./hooks/useWatchHistory";
 import { AnimeDetail, AnimeItem, CatalogSection, EpisodeDetail, ScheduleDay } from "./types";
+
+function parseRouteFromHash(hash: string): {
+  tab: string;
+  animeSlug: string | null;
+  episodeSlug: string | null;
+} {
+  const clean = hash.replace(/^#\/?/, "").trim();
+  if (!clean || clean === "home") {
+    return { tab: "home", animeSlug: null, episodeSlug: null };
+  }
+  if (clean.startsWith("episode/")) {
+    const epSlug = decodeURIComponent(clean.replace("episode/", ""));
+    return { tab: "home", animeSlug: null, episodeSlug: epSlug };
+  }
+  if (clean.startsWith("anime/")) {
+    const animeSlug = decodeURIComponent(clean.replace("anime/", ""));
+    return { tab: "home", animeSlug, episodeSlug: null };
+  }
+  if (clean === "schedule" || clean === "catalog" || clean === "watchlist" || clean === "history") {
+    return { tab: clean, animeSlug: null, episodeSlug: null };
+  }
+  return { tab: "home", animeSlug: null, episodeSlug: null };
+}
 
 export default function App() {
   // Navigation & View Routing State
@@ -73,7 +96,7 @@ export default function App() {
     return new Set(history.map((h) => h.episodeSlug));
   }, [history]);
 
-  // Initial Data Fetch
+  // Initial Data Fetch for Home, Schedule, Catalog, Genres
   useEffect(() => {
     async function initData() {
       try {
@@ -99,50 +122,102 @@ export default function App() {
     initData();
   }, []);
 
-  // Handle selecting an anime to open detail page
-  const handleSelectAnime = async (slug: string) => {
-    setSelectedAnimeSlug(slug);
-    setSelectedEpisodeSlug(null);
+  // Synchronize route on browser back/forward and hash changes
+  const handleRouteChange = useCallback(async () => {
+    const route = parseRouteFromHash(window.location.hash);
+    setActiveTab(route.tab);
+    setSelectedAnimeSlug(route.animeSlug);
+    setSelectedEpisodeSlug(route.episodeSlug);
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    try {
-      setLoadingDetail(true);
-      setErrorMsg(null);
-      const detail = await getAnimeDetail(slug);
-      setCurrentAnimeDetail(detail);
-    } catch (err: any) {
-      console.error("Error fetching anime detail:", err);
-      setErrorMsg("Tidak dapat memuat detail anime.");
-    } finally {
-      setLoadingDetail(false);
+    if (route.episodeSlug) {
+      try {
+        setLoadingEpisode(true);
+        setErrorMsg(null);
+        const epDetail = await getEpisodeDetail(route.episodeSlug);
+        setCurrentEpisodeDetail(epDetail);
+
+        const targetAnimeSlug = epDetail.seriesSlug || route.animeSlug;
+        if (targetAnimeSlug) {
+          setSelectedAnimeSlug(targetAnimeSlug);
+          getAnimeDetail(targetAnimeSlug)
+            .then((d) => setCurrentAnimeDetail(d))
+            .catch((e) => console.warn("Background detail load warning:", e));
+        }
+      } catch (err: any) {
+        console.error("Error fetching episode detail:", err);
+        setErrorMsg("Tidak dapat memuat pemutar video untuk episode ini.");
+      } finally {
+        setLoadingEpisode(false);
+      }
+    } else if (route.animeSlug) {
+      try {
+        setLoadingDetail(true);
+        setErrorMsg(null);
+        const detail = await getAnimeDetail(route.animeSlug);
+        setCurrentAnimeDetail(detail);
+      } catch (err: any) {
+        console.error("Error fetching anime detail:", err);
+        setErrorMsg("Tidak dapat memuat detail anime.");
+      } finally {
+        setLoadingDetail(false);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("popstate", handleRouteChange);
+    window.addEventListener("hashchange", handleRouteChange);
+
+    // Initial check on load
+    handleRouteChange();
+
+    return () => {
+      window.removeEventListener("popstate", handleRouteChange);
+      window.removeEventListener("hashchange", handleRouteChange);
+    };
+  }, [handleRouteChange]);
+
+  // Navigate to Tab
+  const handleSelectTab = (tab: string) => {
+    const targetHash = tab === "home" ? "#/" : `#/${tab}`;
+    if (window.location.hash === targetHash) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.location.hash = targetHash;
     }
   };
 
-  // Handle selecting an episode to play in video player
-  const handleSelectEpisode = async (episodeSlug: string, animeSlug?: string) => {
-    setSelectedEpisodeSlug(episodeSlug);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+  // Navigate to Anime Detail
+  const handleSelectAnime = (slug: string) => {
+    const targetHash = `#/anime/${slug}`;
+    if (window.location.hash === targetHash) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.location.hash = targetHash;
+    }
+  };
 
-    try {
-      setLoadingEpisode(true);
-      setErrorMsg(null);
+  // Navigate to Episode Player
+  const handleSelectEpisode = (episodeSlug: string) => {
+    const targetHash = `#/episode/${episodeSlug}`;
+    if (window.location.hash === targetHash) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.location.hash = targetHash;
+    }
+  };
 
-      const epDetail = await getEpisodeDetail(episodeSlug);
-      setCurrentEpisodeDetail(epDetail);
-
-      // If we don't have anime details yet, fetch it from seriesSlug
-      const targetAnimeSlug = animeSlug || epDetail.seriesSlug || selectedAnimeSlug;
-      if (targetAnimeSlug && (!currentAnimeDetail || selectedAnimeSlug !== targetAnimeSlug)) {
-        setSelectedAnimeSlug(targetAnimeSlug);
-        getAnimeDetail(targetAnimeSlug)
-          .then((d) => setCurrentAnimeDetail(d))
-          .catch((e) => console.warn("Background detail load warning:", e));
+  // Handle In-App Back button (navigates back in device/browser history)
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      if (selectedEpisodeSlug && selectedAnimeSlug) {
+        handleSelectAnime(selectedAnimeSlug);
+      } else {
+        handleSelectTab("home");
       }
-    } catch (err: any) {
-      console.error("Error fetching episode detail:", err);
-      setErrorMsg("Tidak dapat memuat pemutar video untuk episode ini.");
-    } finally {
-      setLoadingEpisode(false);
     }
   };
 
@@ -186,12 +261,7 @@ export default function App() {
       {/* Top Sticky Navigation Bar */}
       <Navbar
         activeTab={activeTab}
-        setActiveTab={(tab) => {
-          setActiveTab(tab);
-          setSelectedAnimeSlug(null);
-          setSelectedEpisodeSlug(null);
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
+        setActiveTab={handleSelectTab}
         onSelectAnime={handleSelectAnime}
         onSelectEpisode={handleSelectEpisode}
         historyCount={history.length}
@@ -225,8 +295,8 @@ export default function App() {
             animePoster={currentAnimeDetail?.poster}
             allEpisodes={currentAnimeDetail?.episodeList || []}
             currentEpisodeSlug={selectedEpisodeSlug}
-            onSelectEpisode={(epSlug) => handleSelectEpisode(epSlug, selectedAnimeSlug || undefined)}
-            onBackToAnime={() => setSelectedEpisodeSlug(null)}
+            onSelectEpisode={(epSlug) => handleSelectEpisode(epSlug)}
+            onBackToAnime={handleGoBack}
             onRecordHistory={() => {
               recordHistory({
                 animeSlug: currentEpisodeDetail.seriesSlug || selectedAnimeSlug || "unknown",
@@ -249,8 +319,8 @@ export default function App() {
           <AnimeDetailView
             anime={currentAnimeDetail}
             animeSlug={selectedAnimeSlug}
-            onSelectEpisode={(epSlug) => handleSelectEpisode(epSlug, selectedAnimeSlug)}
-            onBack={() => setSelectedAnimeSlug(null)}
+            onSelectEpisode={(epSlug) => handleSelectEpisode(epSlug)}
+            onBack={handleGoBack}
             isBookmarked={isBookmarked(selectedAnimeSlug)}
             onToggleBookmark={(status) => {
               toggleBookmark(
@@ -288,7 +358,7 @@ export default function App() {
             history={history}
             bookmarks={bookmarks}
             onSelectAnime={handleSelectAnime}
-            onSelectEpisode={(epSlug, animeSlug) => handleSelectEpisode(epSlug, animeSlug)}
+            onSelectEpisode={(epSlug) => handleSelectEpisode(epSlug)}
             onRemoveHistory={removeHistoryItem}
             onClearHistory={clearHistory}
             onRemoveBookmark={removeBookmark}
@@ -326,7 +396,7 @@ export default function App() {
                     <h3 className="font-bold text-sm text-white">Lanjutkan Menonton</h3>
                   </div>
                   <button
-                    onClick={() => setActiveTab("history")}
+                    onClick={() => handleSelectTab("history")}
                     className="text-xs font-semibold text-red-500 hover:underline"
                   >
                     Lihat Semua ({history.length})
@@ -337,7 +407,7 @@ export default function App() {
                   {history.slice(0, 4).map((h) => (
                     <div
                       key={`${h.animeSlug}-${h.episodeSlug}`}
-                      onClick={() => handleSelectEpisode(h.episodeSlug, h.animeSlug)}
+                      onClick={() => handleSelectEpisode(h.episodeSlug)}
                       className="group flex cursor-pointer items-center gap-3 rounded-xl bg-neutral-900/90 p-2.5 border border-neutral-800 transition-all hover:border-red-600/50 hover:bg-neutral-800"
                     >
                       <img
@@ -423,7 +493,7 @@ export default function App() {
                 </div>
 
                 <button
-                  onClick={() => setActiveTab("schedule")}
+                  onClick={() => handleSelectTab("schedule")}
                   className="flex items-center gap-1 text-xs font-bold text-red-500 hover:underline"
                 >
                   <span>Lihat Jadwal</span>
@@ -479,7 +549,7 @@ export default function App() {
                     </h2>
                   </div>
                   <button
-                    onClick={() => setActiveTab("catalog")}
+                    onClick={() => handleSelectTab("catalog")}
                     className="flex items-center gap-1 text-xs font-bold text-red-500 hover:underline"
                   >
                     <span>Jelajahi Semua</span>
@@ -514,12 +584,7 @@ export default function App() {
       </main>
 
       {/* Aesthetic Footer */}
-      <Footer onNavClick={(tab) => {
-        setActiveTab(tab);
-        setSelectedAnimeSlug(null);
-        setSelectedEpisodeSlug(null);
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      }} />
+      <Footer onNavClick={handleSelectTab} />
     </div>
   );
 }
