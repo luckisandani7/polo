@@ -1,0 +1,7 @@
+{
+  "name": "Sandanime",
+  "description": "SandAnime adalah platform streaming modern yang dirancang khusus untuk para pencinta anime (Otaku & Wibu) di seluruh dunia. Kami berkomitmen untuk memberikan pengalaman menonton terbaik dengan menyediakan ribuan episode anime, mulai dari serial klasik legendaris hingga rilisan simulcast terbaru yang tayang langsung dari Jepang. Dengan antarmuka yang bersih, responsif, dan mudah digunakan, SandAnime memastikan Anda dapat menikmati setiap momen epik, emosional, dan penuh aksi dari karakter favorit Anda tanpa hambatan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
