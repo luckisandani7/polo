@@ -106,20 +106,15 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             id="nav-brand-logo"
             onClick={() => setActiveTab("home")}
-            className="group flex items-center gap-2 text-left transition-opacity hover:opacity-90 active:scale-95"
+            className="group flex flex-col text-left transition-opacity hover:opacity-90 active:scale-95"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-600 text-white font-extrabold text-sm">
-              S
+            <div className="flex items-center gap-0.5 font-black tracking-tight text-lg sm:text-xl leading-none">
+              <span className="text-white">SAND</span>
+              <span className="text-red-600 font-extrabold">ANIME</span>
             </div>
-            <div>
-              <div className="flex items-center gap-0.5 font-black tracking-tight text-lg sm:text-xl leading-none">
-                <span className="text-white">SAND</span>
-                <span className="text-red-600 font-extrabold">ANIME</span>
-              </div>
-              <p className="text-[10px] font-medium tracking-wider text-neutral-400 uppercase mt-0.5">
-                Anime Sub Indo
-              </p>
-            </div>
+            <p className="text-[10px] font-medium tracking-wider text-neutral-400 uppercase mt-0.5">
+              Anime Sub Indo
+            </p>
           </button>
 
           {/* Desktop Nav Links */}
