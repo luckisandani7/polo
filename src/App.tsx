@@ -149,6 +149,7 @@ export default function App() {
         setErrorMsg(null);
         const epDetail = await getEpisodeDetail(route.episodeSlug);
         setCurrentEpisodeDetail(epDetail);
+        document.title = `Nonton ${epDetail.title} Sub Indo - Sandanime`;
 
         const targetAnimeSlug = epDetail.seriesSlug || route.animeSlug;
         if (targetAnimeSlug) {
@@ -169,12 +170,27 @@ export default function App() {
         setErrorMsg(null);
         const detail = await getAnimeDetail(route.animeSlug);
         setCurrentAnimeDetail(detail);
+        document.title = `${detail.title} Sub Indo - Sandanime`;
       } catch (err: any) {
         console.error("Error fetching anime detail:", err);
         setErrorMsg("Tidak dapat memuat detail anime.");
       } finally {
         setLoadingDetail(false);
       }
+    } else if (route.searchQuery) {
+      document.title = `Pencarian "${route.searchQuery}" - Sandanime`;
+    } else if (route.tab === "schedule") {
+      document.title = "Jadwal Rilis Anime - Sandanime";
+    } else if (route.tab === "catalog") {
+      document.title = "Katalog Anime Lengkap A-Z - Sandanime";
+    } else if (route.tab === "watchlist" || route.tab === "history") {
+      document.title = "Koleksi & Riwayat Nonton - Sandanime";
+    } else if (route.tab === "about") {
+      document.title = "Tentang Kami - Sandanime";
+    } else if (route.tab === "sitemap") {
+      document.title = "Sitemap Direktori - Sandanime";
+    } else {
+      document.title = "Sandanime - Streaming anime subtitle indonesia lengkap";
     }
   }, []);
 
