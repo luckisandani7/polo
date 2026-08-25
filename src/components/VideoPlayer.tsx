@@ -9,15 +9,14 @@ import {
   Download,
   Server,
   Share2,
-  ExternalLink,
-  MessageSquare,
-  Send,
   CheckCircle2,
   ListVideo,
   Info,
   Loader2,
+  AlertTriangle,
+  X,
 } from "lucide-react";
-import { EpisodeDetail, EpisodeItem, CommentItem } from "../types";
+import { EpisodeDetail, EpisodeItem } from "../types";
 import { getServerStreamUrl } from "../services/api";
 
 interface VideoPlayerProps {
@@ -46,58 +45,46 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Active stream state
   const [currentStreamUrl, setCurrentStreamUrl] = useState<string>(episode.streamingUrl);
   const [activeServerName, setActiveServerName] = useState<string>("Utama (DesuStream)");
-  const [selectedQuality, setSelectedQuality] = useState<string>("720p");
   const [loadingServer, setLoadingServer] = useState<boolean>(false);
   const [serverError, setServerError] = useState<string | null>(null);
+
+  // Auto-dismissing server tip notice (7 seconds duration)
+  const [showServerNotice, setShowServerNotice] = useState<boolean>(true);
 
   const [activeDownloadTab, setActiveDownloadTab] = useState<string>("Mp4_720p");
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Discussion & Comments state
-  const [comments, setComments] = useState<CommentItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(`comments_${episode.seriesSlug}`);
-      return saved
-        ? JSON.parse(saved)
-        : [
-            {
-              id: "c1",
-              user: "AnimeLovers99",
-              avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=AnimeLovers99",
-              text: "Animasi episode ini gila banget! Kualitas visualnya mantap pol 🔥",
-              timestamp: Date.now() - 1000 * 60 * 45,
-              likes: 14,
-              episodeNumber: episode.episodeNumber,
-            },
-            {
-              id: "c2",
-              user: "SandAnimeFan",
-              avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=SandAnimeFan",
-              text: "Gak sabar nunggu kelanjutan episode minggu depan!",
-              timestamp: Date.now() - 1000 * 60 * 120,
-              likes: 8,
-              episodeNumber: episode.episodeNumber,
-            },
-          ];
-    } catch {
-      return [];
-    }
-  });
-  const [newComment, setNewComment] = useState("");
-  const [userName, setUserName] = useState("WibuKeren");
-
-  // Reset stream when episode changes
+  // Reset stream and show 7-second notice when episode changes
   useEffect(() => {
     setCurrentStreamUrl(episode.streamingUrl);
     setActiveServerName("Utama (DesuStream)");
     setServerError(null);
+    setShowServerNotice(true);
     onRecordHistory();
+
+    const noticeTimer = setTimeout(() => {
+      setShowServerNotice(false);
+    }, 7000);
 
     // Default download tab
     if (episode.download && episode.download.length > 0) {
       setActiveDownloadTab(episode.download[0].title);
     }
+
+    return () => {
+      clearTimeout(noticeTimer);
+    };
   }, [episode.episodeNumber, currentEpisodeSlug, episode.streamingUrl]);
+
+  // Also auto-dismiss serverError if one occurs after 7 seconds
+  useEffect(() => {
+    if (serverError) {
+      const errorTimer = setTimeout(() => {
+        setServerError(null);
+      }, 7000);
+      return () => clearTimeout(errorTimer);
+    }
+  }, [serverError]);
 
   const handleShare = () => {
     if (navigator.clipboard) {
@@ -123,30 +110,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
       setServerError("Server sedang sibuk, silakan coba server lain.");
     } finally {
       setLoadingServer(false);
-    }
-  };
-
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newComment.trim()) return;
-
-    const item: CommentItem = {
-      id: "c_" + Date.now(),
-      user: userName.trim() || "Anonim",
-      avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(userName)}`,
-      text: newComment.trim(),
-      timestamp: Date.now(),
-      likes: 0,
-      episodeNumber: episode.episodeNumber,
-    };
-
-    const updated = [item, ...comments];
-    setComments(updated);
-    setNewComment("");
-    try {
-      localStorage.setItem(`comments_${episode.seriesSlug}`, JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
     }
   };
 
@@ -222,6 +185,38 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Main Player Column */}
           <div className={`space-y-4 ${theaterMode ? "lg:col-span-12" : "lg:col-span-8 xl:col-span-9"}`}>
+            {/* 7-Second Non-Intrusive Server Warning Notice */}
+            {showServerNotice && (
+              <div className="flex items-center justify-between gap-3 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3.5 py-2 text-[11px] sm:text-xs text-amber-300 transition-all animate-fade-in shadow-sm">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                  <span>
+                    Jika server error atau video tidak dapat diputar, silahkan pilih server lain di kolom pilihan!!!
+                  </span>
+                </div>
+                <button
+                  onClick={() => setShowServerNotice(false)}
+                  className="text-amber-400/80 hover:text-amber-200 p-0.5 rounded transition-colors"
+                  title="Tutup pemberitahuan"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
+            {/* Error banner if server fails (also auto-dismisses in 7s) */}
+            {serverError && (
+              <div className="flex items-center justify-between rounded-lg border border-red-600/30 bg-red-600/10 p-3 text-xs text-red-400 animate-fade-in">
+                <span>{serverError}</span>
+                <button
+                  onClick={() => setServerError(null)}
+                  className="text-red-400 hover:text-red-300"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            )}
+
             {/* Player Container */}
             <div className="relative z-40 overflow-hidden rounded-xl border border-neutral-800 bg-black shadow-2xl">
               <div className="relative aspect-video w-full bg-black">
@@ -250,7 +245,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 )}
               </div>
 
-              {/* Player Top-right quick tools */}
+              {/* Player Bottom status bar */}
               <div className="flex items-center justify-between border-t border-neutral-800 bg-[#0c0c0c] px-4 py-2.5 text-xs">
                 <div className="flex items-center gap-2">
                   <span className="flex h-2 w-2 rounded-full bg-red-500 animate-pulse" />
@@ -258,28 +253,8 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                     Server Aktif: <span className="text-red-500 font-bold">{activeServerName}</span>
                   </span>
                 </div>
-
-                <div className="flex items-center gap-2">
-                  <a
-                    href={currentStreamUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium text-neutral-400 hover:bg-neutral-800 hover:text-white"
-                    title="Buka player di tab baru"
-                  >
-                    <ExternalLink className="h-3.5 w-3.5" />
-                    <span>Tab Baru</span>
-                  </a>
-                </div>
               </div>
             </div>
-
-            {/* Error banner if server fails */}
-            {serverError && (
-              <div className="rounded-lg border border-red-600/30 bg-red-600/10 p-3 text-xs text-red-400">
-                {serverError}
-              </div>
-            )}
 
             {/* Server Selector Bar (Otakudesu Servers / Qualities) */}
             <div className="rounded-xl border border-neutral-800 bg-[#121212] p-3.5 space-y-3">
@@ -467,68 +442,6 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
                 </div>
               </div>
             )}
-
-            {/* Comments / Discussion Section */}
-            <div className="rounded-xl border border-neutral-800 bg-[#121212] p-4 space-y-3">
-              <div className="flex items-center justify-between border-b border-neutral-800 pb-2.5">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-red-500" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-white">Diskusi Episode ({comments.length})</h3>
-                </div>
-              </div>
-
-              {/* Comment Input Box */}
-              <form onSubmit={handleAddComment} className="space-y-2">
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <input
-                    type="text"
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
-                    placeholder="Nama Anda"
-                    className="sm:w-1/3 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs text-neutral-200 placeholder-neutral-500 focus:border-red-600 focus:outline-none"
-                  />
-                  <input
-                    type="text"
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Tulis tanggapan untuk episode ini..."
-                    className="flex-1 rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-xs text-neutral-200 placeholder-neutral-500 focus:border-red-600 focus:outline-none"
-                  />
-                  <button
-                    type="submit"
-                    className="flex items-center justify-center gap-1 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white transition-colors hover:bg-red-700"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    <span>Kirim</span>
-                  </button>
-                </div>
-              </form>
-
-              {/* Comment List */}
-              <div className="space-y-2 pt-1">
-                {comments.map((c) => (
-                  <div
-                    key={c.id}
-                    className="flex items-start gap-2.5 rounded-lg bg-neutral-900/60 p-2.5 border border-neutral-800"
-                  >
-                    <img
-                      src={c.avatar}
-                      alt={c.user}
-                      className="h-7 w-7 rounded-full bg-neutral-800 flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-neutral-200">{c.user}</span>
-                        <span className="text-[10px] text-neutral-500">
-                          {new Date(c.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        </span>
-                      </div>
-                      <p className="mt-0.5 text-xs text-neutral-300 leading-relaxed">{c.text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
           {/* Episode List Sidebar (Sticky) */}

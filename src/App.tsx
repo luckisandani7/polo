@@ -16,6 +16,7 @@ import { VideoPlayer } from "./components/VideoPlayer";
 import { ScheduleView } from "./components/ScheduleView";
 import { CatalogView } from "./components/CatalogView";
 import { WatchHistoryView } from "./components/WatchHistoryView";
+import { SearchResultsView } from "./components/SearchResultsView";
 import { Footer } from "./components/Footer";
 
 import {
@@ -33,23 +34,28 @@ function parseRouteFromHash(hash: string): {
   tab: string;
   animeSlug: string | null;
   episodeSlug: string | null;
+  searchQuery: string | null;
 } {
   const clean = hash.replace(/^#\/?/, "").trim();
   if (!clean || clean === "home") {
-    return { tab: "home", animeSlug: null, episodeSlug: null };
+    return { tab: "home", animeSlug: null, episodeSlug: null, searchQuery: null };
+  }
+  if (clean.startsWith("search/")) {
+    const searchQuery = decodeURIComponent(clean.replace("search/", ""));
+    return { tab: "search", animeSlug: null, episodeSlug: null, searchQuery };
   }
   if (clean.startsWith("episode/")) {
     const epSlug = decodeURIComponent(clean.replace("episode/", ""));
-    return { tab: "home", animeSlug: null, episodeSlug: epSlug };
+    return { tab: "home", animeSlug: null, episodeSlug: epSlug, searchQuery: null };
   }
   if (clean.startsWith("anime/")) {
     const animeSlug = decodeURIComponent(clean.replace("anime/", ""));
-    return { tab: "home", animeSlug, episodeSlug: null };
+    return { tab: "home", animeSlug, episodeSlug: null, searchQuery: null };
   }
   if (clean === "schedule" || clean === "catalog" || clean === "watchlist" || clean === "history") {
-    return { tab: clean, animeSlug: null, episodeSlug: null };
+    return { tab: clean, animeSlug: null, episodeSlug: null, searchQuery: null };
   }
-  return { tab: "home", animeSlug: null, episodeSlug: null };
+  return { tab: "home", animeSlug: null, episodeSlug: null, searchQuery: null };
 }
 
 export default function App() {
@@ -57,6 +63,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<string>("home");
   const [selectedAnimeSlug, setSelectedAnimeSlug] = useState<string | null>(null);
   const [selectedEpisodeSlug, setSelectedEpisodeSlug] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const [selectedGenre, setSelectedGenre] = useState<string>("ALL");
 
   // Data States
@@ -128,6 +135,7 @@ export default function App() {
     setActiveTab(route.tab);
     setSelectedAnimeSlug(route.animeSlug);
     setSelectedEpisodeSlug(route.episodeSlug);
+    setSearchQuery(route.searchQuery);
     window.scrollTo({ top: 0, behavior: "smooth" });
 
     if (route.episodeSlug) {
@@ -177,6 +185,17 @@ export default function App() {
       window.removeEventListener("hashchange", handleRouteChange);
     };
   }, [handleRouteChange]);
+
+  // Navigate to Search
+  const handleSearchSubmit = (query: string) => {
+    if (!query.trim()) return;
+    const targetHash = `#/search/${encodeURIComponent(query.trim())}`;
+    if (window.location.hash === targetHash) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      window.location.hash = targetHash;
+    }
+  };
 
   // Navigate to Tab
   const handleSelectTab = (tab: string) => {
@@ -264,6 +283,7 @@ export default function App() {
         setActiveTab={handleSelectTab}
         onSelectAnime={handleSelectAnime}
         onSelectEpisode={handleSelectEpisode}
+        onSearchSubmit={handleSearchSubmit}
         historyCount={history.length}
         bookmarkCount={bookmarks.length}
         onRandomAnime={handleRandomAnime}
@@ -345,13 +365,33 @@ export default function App() {
               Memuat detail lengkap anime...
             </p>
           </div>
-        ) : /* 3. SCHEDULE TAB VIEW */
+        ) : /* 3. SEARCH RESULTS FULL VIEW */
+        activeTab === "search" && searchQuery ? (
+          <SearchResultsView
+            query={searchQuery}
+            onSelectAnime={handleSelectAnime}
+            onBack={handleGoBack}
+            onSearchNew={handleSearchSubmit}
+            isBookmarked={(slug) => isBookmarked(slug)}
+            onToggleBookmark={(a) =>
+              toggleBookmark({
+                animeSlug: a.slug,
+                title: a.title,
+                poster: a.poster || "",
+                status: "watching",
+                score: a.score,
+                type: a.type,
+              })
+            }
+            onExploreCatalog={() => handleSelectTab("catalog")}
+          />
+        ) : /* 4. SCHEDULE TAB VIEW */
         activeTab === "schedule" ? (
           <ScheduleView schedule={scheduleData} onSelectAnime={handleSelectAnime} />
-        ) : /* 4. CATALOG TAB VIEW */
+        ) : /* 5. CATALOG TAB VIEW */
         activeTab === "catalog" ? (
           <CatalogView catalog={catalogData} onSelectAnime={handleSelectAnime} />
-        ) : /* 5. WATCHLIST & HISTORY TAB VIEW */
+        ) : /* 6. WATCHLIST & HISTORY TAB VIEW */
         activeTab === "watchlist" || activeTab === "history" ? (
           <WatchHistoryView
             initialTab={activeTab as any}

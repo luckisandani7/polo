@@ -21,6 +21,7 @@ interface NavbarProps {
   setActiveTab: (tab: string) => void;
   onSelectAnime: (slug: string) => void;
   onSelectEpisode?: (episodeSlug: string, animeSlug?: string) => void;
+  onSearchSubmit?: (query: string) => void;
   historyCount: number;
   bookmarkCount: number;
   onRandomAnime: () => void;
@@ -30,6 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeTab,
   setActiveTab,
   onSelectAnime,
+  onSearchSubmit,
   historyCount,
   bookmarkCount,
   onRandomAnime,
@@ -40,6 +42,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Debounced search
   useEffect(() => {
@@ -79,6 +82,20 @@ export const Navbar: React.FC<NavbarProps> = ({
     setShowSearchDropdown(false);
     setQuery("");
     onSelectAnime(slug);
+  };
+
+  const handleSearchFormSubmit = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const trimmed = query.trim();
+    if (!trimmed) return;
+
+    setShowSearchDropdown(false);
+    if (inputRef.current) {
+      inputRef.current.blur();
+    }
+    if (onSearchSubmit) {
+      onSearchSubmit(trimmed);
+    }
   };
 
   const navLinks = [
@@ -152,8 +169,9 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-2.5">
           {/* Search Box */}
           <div ref={searchRef} className="relative w-44 sm:w-60 md:w-72">
-            <div className="relative">
+            <form onSubmit={handleSearchFormSubmit} className="relative">
               <input
+                ref={inputRef}
                 id="main-search-input"
                 type="text"
                 value={query}
@@ -162,19 +180,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setShowSearchDropdown(true);
                 }}
                 onFocus={() => setShowSearchDropdown(true)}
-                placeholder="Cari anime..."
+                placeholder="Cari anime... (Tekan Enter)"
                 className="w-full rounded-lg border border-neutral-800 bg-neutral-900/90 py-1.5 pl-8 pr-7 text-xs text-neutral-100 placeholder-neutral-500 transition-all focus:border-red-600 focus:bg-neutral-900 focus:outline-none focus:ring-1 focus:ring-red-600"
               />
-              <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
+              <button
+                type="submit"
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500"
+                title="Cari"
+              >
+                <Search className="h-3.5 w-3.5" />
+              </button>
               {query && (
                 <button
+                  type="button"
                   onClick={() => setQuery("")}
                   className="absolute right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
               )}
-            </div>
+            </form>
 
             {/* Search Dropdown Popup */}
             {showSearchDropdown && (query.trim() || searchResults.length > 0) && (
@@ -186,8 +211,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 ) : searchResults.length > 0 ? (
                   <div className="space-y-1">
-                    <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
-                      Hasil Pencarian ({searchResults.length})
+                    <div className="flex items-center justify-between px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+                      <span>Hasil Langsung ({searchResults.length})</span>
+                      <span className="text-[9px] text-neutral-500 lowercase">tekan enter untuk halaman hasil</span>
                     </div>
                     {searchResults.map((item, idx) => (
                       <button
@@ -225,10 +251,24 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <ChevronRight className="h-3.5 w-3.5 text-neutral-500" />
                       </button>
                     ))}
+
+                    <button
+                      onClick={() => handleSearchFormSubmit()}
+                      className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-red-600/20 border border-red-600/40 p-2 text-center text-xs font-bold text-red-400 hover:bg-red-600 hover:text-white transition-colors"
+                    >
+                      <Search className="h-3.5 w-3.5" />
+                      <span>Lihat semua hasil untuk "{query}"</span>
+                    </button>
                   </div>
                 ) : (
-                  <div className="py-5 text-center text-xs text-neutral-400">
-                    Tidak ditemukan anime untuk "{query}"
+                  <div className="py-4 text-center text-xs text-neutral-400">
+                    <p>Tidak ada preview instan untuk "{query}"</p>
+                    <button
+                      onClick={() => handleSearchFormSubmit()}
+                      className="mt-2 inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1 text-xs font-bold text-white shadow-sm"
+                    >
+                      Cari Di Semua Database
+                    </button>
                   </div>
                 )}
               </div>
